@@ -1,0 +1,12 @@
+[package]
+name = "net-tools"
+version = "0.1.0"
+edition = "2021"
+
+[[bin]]
+name = "tls"
+path = "src/tls.rs"
+
+[dependencies]
+rustls = { version = "0.21", features = ["dangerous_configuration", "secret_extraction"] }
+x509-cert = { version = "0.2", path = "../formats/x509-cert" }
