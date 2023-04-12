@@ -1,2 +1,2 @@
 [workspace]
-members = ["asn1", "tls", "x509"]
+members = ["pki", "tls"]
