@@ -6,3 +6,4 @@ pub mod crl;
 pub mod der;
 pub mod error;
 pub mod req;
+pub use pkcs8;
