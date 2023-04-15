@@ -6,6 +6,9 @@ pub type Result<T> = core::result::Result<T, Error>;
 /// PKI Error definitions
 #[derive(Debug)]
 pub enum Error {
+    /// Key error
+    InvalidKey,
+
     /// Decryption error
     Decryption,
 
