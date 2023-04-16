@@ -2,12 +2,14 @@
 
 use crate::{
     cert::Certificate,
+    error::{Error, Result},
     ocsp::{CertId, Version},
+    verify::verify,
 };
 use alloc::vec::Vec;
 use core::default::Default;
 use core::option::Option;
-use der::{asn1::BitString, Sequence};
+use der::{asn1::BitString, Encode, Sequence};
 use x509_cert::{
     ext::{pkix::name::GeneralName, Extensions},
     spki::AlgorithmIdentifierOwned,
@@ -29,6 +31,24 @@ pub struct OcspRequest {
 
     #[asn1(context_specific = "0", optional = "true", tag_mode = "EXPLICIT")]
     pub optional_signature: Option<Signature>,
+}
+
+impl OcspRequest {
+    /// Verifies the OCSP Request given the issuer
+    pub fn verify(&self, issuer: &Certificate) -> Result<()> {
+        let signature = match &self.optional_signature {
+            Some(s) => s,
+            None => return Err(Error::Verification),
+        };
+        let public_key = issuer.tbs_certificate.subject_public_key_info.to_der()?;
+        let oid = &signature.signature_algorithm.oid;
+        let msg = self.tbs_request.to_der()?;
+        let sig = match signature.signature.as_bytes() {
+            Some(s) => s,
+            None => return Err(Error::InvalidSignature),
+        };
+        Ok(verify(oid, &public_key, &msg, &sig)?)
+    }
 }
 
 /// TBSRequest structure as defined in [RFC 6960 Section 4.1.1].

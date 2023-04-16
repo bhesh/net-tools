@@ -1,5 +1,10 @@
 //! OCSP Response
 
+use crate::{
+    cert::Certificate,
+    error::{Error, Result},
+    verify::verify,
+};
 use alloc::vec::Vec;
 use core::default::Default;
 use core::option::Option;
@@ -7,7 +12,7 @@ use der::{
     asn1::{
         GeneralizedTime, Null, {BitString, Ia5String, ObjectIdentifier, OctetString, Uint},
     },
-    Any, Choice, Enumerated, Sequence,
+    Any, Choice, Encode, Enumerated, Sequence,
 };
 use x509_cert::{
     ext::{
@@ -154,10 +159,24 @@ pub struct BasicOcspResponse {
     pub certs: Option<Vec<Any>>,
 }
 
+impl BasicOcspResponse {
+    /// Verifies the OCSP Response given the issuer
+    pub fn verify(&self, issuer: &Certificate) -> Result<()> {
+        let public_key = issuer.tbs_certificate.subject_public_key_info.to_der()?;
+        let oid = &self.signature_algorithm.oid;
+        let msg = self.tbs_response_data.to_der()?;
+        let sig = match self.signature.as_bytes() {
+            Some(s) => s,
+            None => return Err(Error::InvalidSignature),
+        };
+        Ok(verify(oid, &public_key, &msg, &sig)?)
+    }
+}
+
 /// ResponseData structure as defined in [RFC 6960 Section 4.2.1].
 ///
 /// ```text
-// ResponseData ::= SEQUENCE {
+/// ResponseData ::= SEQUENCE {
 ///    version              [0] EXPLICIT Version DEFAULT v1,
 ///    responderID             ResponderID,
 ///    producedAt              GeneralizedTime,
