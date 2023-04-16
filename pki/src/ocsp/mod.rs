@@ -172,6 +172,7 @@ jxSZnE0qnsHhfTuvcqdFuhOWKU4Z0BqYBvQ3lBetoxi6PrABDJXWKTUgNX31EGDk
         let cert_id = &req.tbs_request.request_list[0].req_cert;
         assert_eq!(&cert_id.issuer_name_hash.as_bytes(), &ISSUER_NAME_HASH);
         assert_eq!(&cert_id.issuer_key_hash.as_bytes(), &ISSUER_KEY_HASH);
+        assert_eq!(&cert_id.serial_number.as_bytes(), &SERIAL_NUMBER);
         let ext = &req.tbs_request.request_extensions.expect("no extensions")[0];
         assert_eq!(&ext.extn_id, &db::rfc6960::ID_PKIX_OCSP_NONCE);
         assert_eq!(ext.critical, false);
@@ -193,6 +194,7 @@ jxSZnE0qnsHhfTuvcqdFuhOWKU4Z0BqYBvQ3lBetoxi6PrABDJXWKTUgNX31EGDk
         let cert_id = &single_response.cert_id;
         assert_eq!(&cert_id.issuer_name_hash.as_bytes(), &ISSUER_NAME_HASH);
         assert_eq!(&cert_id.issuer_key_hash.as_bytes(), &ISSUER_KEY_HASH);
+        assert_eq!(&cert_id.serial_number.as_bytes(), &SERIAL_NUMBER);
         let cert_status = &single_response.cert_status;
         match cert_status {
             CertStatus::Good(_) => {}
