@@ -656,9 +656,12 @@ version = "0.1.0"
 dependencies = [
  "const-oid",
  "der 0.7.3 (registry+https://github.com/rust-lang/crates.io-index)",
+ "rand_chacha",
+ "rand_core",
  "rsa",
  "sha1",
  "sha2",
+ "signature",
  "x509-cert 0.2.1 (registry+https://github.com/rust-lang/crates.io-index)",
 ]
 

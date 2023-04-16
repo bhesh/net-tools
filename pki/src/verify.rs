@@ -3,8 +3,9 @@
 use crate::error::{Error, Result};
 use const_oid::{db, ObjectIdentifier};
 use rsa::{pkcs8::DecodePublicKey, Pkcs1v15Sign, PublicKey, RsaPublicKey};
+use signature::digest::Digest;
 use sha1::Sha1;
-use sha2::{Digest, Sha224, Sha256, Sha384, Sha512};
+use sha2::{Sha224, Sha256, Sha384, Sha512};
 
 /// Validates the signature given an OID, public key, message, and signature
 pub(crate) fn verify(
